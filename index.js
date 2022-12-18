@@ -40,21 +40,8 @@ async function connectToWhatsApp() {
       }
     } else if (connection === 'open') {
       console.log('opened connection');
+      runningServer(sock);
     }
-  });
-
-  await app.listen(port, () => {
-    console.log(`cli-nodejs-api listening at http://localhost:${port}`);
-  });
-
-  // example localhost:7000/sendpesan?nomor=6283***&pesan=hehehe
-  await app.get('/sendpesan', (req, res) => {
-    console.log(req.body);
-    console.log(req.query.pesan);
-    sock.sendMessage(`${req.query.nomor}@s.whatsapp.net`, {
-      text: req.query.pesan,
-    });
-    res.send('Horee berhasil');
   });
 
   sock.ev.on('messages.upsert', (m) => {
@@ -69,6 +56,21 @@ async function connectToWhatsApp() {
   });
 }
 
+const runningServer = async (sock) => {
+  await app.listen(port, () => {
+    console.log(`cli-nodejs-api listening at http://localhost:${port}`);
+  });
+
+  // example localhost:7000/sendpesan?nomor=6283***&pesan=hehehe
+  await app.get('/sendpesan', (req, res) => {
+    console.log(req.body);
+    console.log(req.query.pesan);
+    sock.sendMessage(`${req.query.nomor}@s.whatsapp.net`, {
+      text: req.query.pesan,
+    });
+    res.send('Horee berhasil');
+  });
+};
 const getGroup = async (sock) => {
   if (!fs.existsSync('./group_id.txt')) {
     const group_metadata = await sock.groupCreate('Status Contact WA', []);
