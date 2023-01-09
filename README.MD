@@ -31,3 +31,7 @@ Gunakan tools ini untuk kebutuhan whatsapp
 - scan whatsapp mu
 
 - selesai
+
+## Video Tutorial
+
+https://web.facebook.com/mrtampan000000000000000000000000000000000000000000/videos/828509615086698
