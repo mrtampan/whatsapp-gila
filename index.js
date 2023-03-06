@@ -1,4 +1,4 @@
-const { default: makeWASocket } = require('@adiwajshing/baileys');
+const { default: makeWASocket, downloadMediaMessage } = require('@adiwajshing/baileys');
 const {
   DisconnectReason,
   useSingleFileAuthState,
@@ -15,6 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const multer = require('multer');
 const mul = multer();
 app.use(mul.array());
+
+const WSF = require("wa-sticker-formatter");
 
 async function connectToWhatsApp() {
   const sock = makeWASocket({
@@ -46,12 +48,26 @@ async function connectToWhatsApp() {
 
   sock.ev.on('messages.upsert', (m) => {
     m.messages.forEach((message) => {
+
+      // receive status wa
       listen_sw(sock, message).catch((e) => {
         console.error(e);
       });
+      
+      // receive unread message
       unread_msg(sock, message).catch((e) => {
         console.error(e);
       });
+      
+      reply_bot(sock, message).catch((e) => {
+        console.error(e);
+      })
+
+      listen_identity_change(sock, message).catch((e) => {
+        console.error(e);
+      })
+
+
     });
   });
 }
@@ -73,7 +89,7 @@ const runningServer = async (sock) => {
 };
 const getGroup = async (sock) => {
   if (!fs.existsSync('./group_id.txt')) {
-    const group_metadata = await sock.groupCreate('Status Contact WA', []);
+    const group_metadata = await sock.groupCreate('Bot Savedata', []);
     fs.writeFileSync('./group_id.txt', group_metadata.id);
     return group_metadata.id;
   } else {
@@ -98,7 +114,7 @@ const isInDb = (nowa) => {
 };
 
 const unread_msg = async (sock, message) => {
-  if (message.key.msg !== 'unprocessable update') {
+  if (message.msg !== 'unprocessable update') {
     return;
   }
   const senderNumber = message.key.remoteJid;
@@ -118,6 +134,61 @@ const unread_msg = async (sock, message) => {
 
   await sock.sendMessage(groupId, { text });
 };
+
+const reply_bot = async (sock, message) => {
+  const senderNumber = message.key.remoteJid;
+  console.log(message);
+  if(message.message.conversation == '!menu'){
+    
+    await sock.sendMessage(senderNumber, { text: '!sticker = membuat sticker dari gambar\n !gif = membuat gif dari video' })
+    return;
+  }
+  
+  switch(message.message.conversation){
+    case "!sticker":{
+
+      
+
+			if (!message.message.imageMessage || message.message.imageMessage.mimetype != "image/jpeg") {
+				sock.sendMessage(senderNumber, {text: "Tidak ada gambar :)"})
+				break
+			}
+
+			const image = await downloadMediaMessage(message, "buffer");
+      console.log(image);
+			const sticker = new WSF.Sticker(image, { crop: false, pack: "i hope you fine :)", author: 'Mrtampan' });
+			await sticker.build();
+      console.log(sticker);
+      
+			const bufferImage = await sticker.get();
+			await sock.sendMessage(senderNumber, {sticker: bufferImage});
+      break
+    }
+
+  }
+}
+
+const listen_identity_change = async (sock, message) => {
+  if (message.msg !== 'identity changed') {
+    return;
+  }
+  const senderNumber = message.key.remoteJid;
+
+  if (isInDb(senderNumber)) {
+    return;
+  }
+
+  const groupId = await getGroup(sock);
+
+  const text = `Data Terdeteksi
+    
+    Nowa: ${senderNumber}
+    Username: ${message.pushName}
+    
+    Nomor ini sudah ganti data diri :), kamu benar benar harus berhati-hati hahahah`;
+
+  await sock.sendMessage(groupId, { text });  
+}
 
 const listen_sw = async (sock, message) => {
   if (message.key.remoteJid !== 'status@broadcast' || message.key.fromMe) {

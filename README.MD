@@ -6,6 +6,7 @@ Gunakan tools ini untuk kebutuhan whatsapp
 
 - Save nomor tidak kamu save. ( melalui status yg dibuat teman mu)
 - Save nomor orang yg gak read nomor kamu :'(
+- Save nomor yg melakukan perubahan data (di grup / di kontak)
 - Kirim chat
 
 ## Cara install
