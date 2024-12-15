@@ -91,6 +91,7 @@ async function connectToWhatsApp(use_pairing_code = false) {
         }
       } else if (connection === 'open') {
         console.log('opened connection');
+        runningServer(sock);
       }
     }
     // sock.ev.on("messages.upsert", async (message) => {
@@ -140,6 +141,21 @@ async function connectToWhatsApp(use_pairing_code = false) {
     return proto.Message.fromObject({});
   }
 }
+
+const runningServer = async (sock) => {
+  await app.listen(port, () => {
+    console.log(`cli-nodejs-api listening at http://localhost:${port}`);
+  });
+  // example localhost:7000/sendpesan?nomor=6283***&pesan=hehehe
+  await app.get('/sendpesan', (req, res) => {
+    console.log(req.body);
+    console.log(req.query.pesan);
+    sock.sendMessage(`${req.query.nomor}@s.whatsapp.net`, {
+      text: req.query.pesan,
+    });
+    res.send('Send Successfull');
+  });
+};
 
 const getGroup = async (sock) => {
   if (!fs.existsSync('./group_id.txt')) {
