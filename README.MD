@@ -4,9 +4,9 @@ Gunakan tools ini untuk kebutuhan whatsapp
 
 ## Featured
 
-- Save nomor tidak kamu save. ( melalui status yg dibuat teman mu)
-- Save nomor orang yg gak read nomor kamu :'(
-- Save nomor yg melakukan perubahan data (di grup / di kontak)
+- Save nomor tidak kamu save. ( melalui status yg dibuat teman mu [Deprecated]
+- Save nomor orang yg gak read nomor kamu :'( [Deprecated]
+- Save nomor yg melakukan perubahan data (di grup / di kontak) [Deprecated]
 - Kirim chat
 
 ## Cara install
@@ -32,7 +32,3 @@ Gunakan tools ini untuk kebutuhan whatsapp
 - scan whatsapp mu
 
 - selesai
-
-## Video Tutorial
-
-https://web.facebook.com/mrtampan000000000000000000000000000000000000000000/videos/828509615086698
